@@ -11,6 +11,8 @@ use sdl2::video::GLProfile;
 
 use simple_logger::SimpleLogger;
 
+use crate::shader::ShaderProgram;
+
 fn main() {
     SimpleLogger::new().with_colors(true).init().unwrap();
     log::info!("start.");
@@ -35,6 +37,10 @@ fn main() {
     debug_assert_eq!(gl_attr.context_version(), (4, 5));
 
     let mut event_pump = sdl_context.event_pump().unwrap();
+
+    let vs = std::fs::read_to_string("src/vs.glsl").unwrap();
+    let fs = std::fs::read_to_string("src/fs.glsl").unwrap();
+    let shader_program = ShaderProgram::from_shader_strings(&vs, &fs).unwrap();
 
     let vertices: Vec<f32> = vec![
         // positions      // colors
@@ -91,7 +97,9 @@ fn main() {
             gl::Viewport(0, 0, window_width as i32, window_height as i32);
             gl::ClearColor(0.1, 0.1, 0.1, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
-            
+
+            shader_program.use_program();
+
             gl::BindVertexArray(vao);
             gl::DrawArrays(
                 gl::TRIANGLES, // mode

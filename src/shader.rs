@@ -2,11 +2,11 @@ use gl;
 use std;
 use std::ffi::{CStr, CString};
 
-pub struct Program {
+pub struct ShaderProgram {
     id: gl::types::GLuint,
 }
 
-impl std::ops::Drop for Program {
+impl std::ops::Drop for ShaderProgram {
     fn drop(&mut self) {
         log::debug!("droping program");
         unsafe {
@@ -15,14 +15,14 @@ impl std::ops::Drop for Program {
     }
 }
 
-impl Program {
+impl ShaderProgram {
     pub fn use_program(&self) {
         unsafe {
             gl::UseProgram(self.id);
         }
     }
 
-    pub fn from_shader_strings(vs: &str, fs: &str) -> Result<Program, String> {
+    pub fn from_shader_strings(vs: &str, fs: &str) -> Result<ShaderProgram, String> {
         let program_id = unsafe { gl::CreateProgram() };
 
         let vs = match shader_from_source(vs, gl::VERTEX_SHADER) {
@@ -72,7 +72,7 @@ impl Program {
             gl::DetachShader(program_id, fs.id);
         }
 
-        Ok(Program { id: program_id })
+        Ok(ShaderProgram { id: program_id })
     }
 }
 
