@@ -16,6 +16,12 @@ impl std::ops::Drop for Program {
 }
 
 impl Program {
+    pub fn use_program(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+        }
+    }
+
     pub fn from_shader_strings(vs: &str, fs: &str) -> Result<Program, String> {
         let program_id = unsafe { gl::CreateProgram() };
 
