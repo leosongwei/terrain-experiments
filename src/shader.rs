@@ -34,6 +34,8 @@ impl ShaderProgram {
             Err(message) => return Err(message)
         };
 
+        log::debug!("link shaders");
+
         unsafe {
             gl::AttachShader(program_id, vs.id);
             gl::AttachShader(program_id, fs.id);
