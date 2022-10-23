@@ -47,9 +47,9 @@ fn main() {
     ];
 
     let mut mesh = mesh::Mesh::new(vec![
-        mesh::Vertex::new(0, Vec3::new(0.5, -0.5, 0.0), [255, 0, 0, 255], Vec2::new(0.0, 0.0)),
-        mesh::Vertex::new(0, Vec3::new(-0.5, -0.5, 0.0), [0, 255, 0, 255], Vec2::new(0.0, 0.0)),
-        mesh::Vertex::new(0, Vec3::new(0.0, 0.5, 0.0), [0, 0, 255, 255], Vec2::new(0.0, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(0.5, -0.5, 0.0), [255, 0, 0, 255], Vec2::new(0.3, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(-0.5, -0.5, 0.0), [0, 255, 0, 255], Vec2::new(0.3, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(0.0, 0.5, 0.0), [0, 0, 255, 255], Vec2::new(0.3, 0.0)),
     ]);
 
     mesh.load_without_ebo();
