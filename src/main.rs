@@ -1,9 +1,5 @@
-extern crate sdl2;
-extern crate gl;
-
-extern crate log;
-
 mod shader;
+mod mesh;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
