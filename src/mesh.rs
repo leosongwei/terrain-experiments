@@ -21,7 +21,7 @@ impl Vertex {
 
 pub struct Mesh {
     vertices: Vec<Vertex>,
-    submitted: bool,
+    loaded: bool,
     indexed: bool,
     vao: gl::types::GLuint,
     vbo: gl::types::GLuint,
@@ -32,11 +32,21 @@ impl Mesh {
     pub fn new(vertices: Vec<Vertex>) -> Self {
         Mesh {
             vertices,
-            submitted: false,
+            loaded: false,
             indexed: false,
             vao: 0,
             vbo: 0,
             ebo: 0
+        }
+    }
+
+    pub fn draw(&self) {
+        unsafe {
+            gl::DrawArrays(
+                gl::TRIANGLES,
+                0,
+                self.vertices.len() as i32
+            )
         }
     }
 
@@ -64,9 +74,10 @@ impl Mesh {
         self.vao = 0;
     }
 
-    fn load_without_ebo(&mut self) {
+    pub fn load_without_ebo(&mut self) {
         let mut vao: gl::types::GLuint = 0;
         let mut vbo: gl::types::GLuint = 0;
+
         unsafe {
             gl::GenBuffers(1, &mut vbo);
             gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
@@ -125,6 +136,7 @@ impl Mesh {
 
         self.vao = vao;
         self.vbo = vbo;
-        self.submitted = true;
+        self.loaded = true;
+        log::debug!("vao: {vao}, vbo: {vbo}");
     }
 }

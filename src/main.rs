@@ -1,6 +1,7 @@
 mod shader;
 mod mesh;
 
+use glam::{Vec3, Vec2};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::video::GLProfile;
@@ -45,47 +46,14 @@ fn main() {
         0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // top
     ];
 
-    let mut vbo: gl::types::GLuint = 0;
-    unsafe {
-        gl::GenBuffers(1, &mut vbo);
-        gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-        gl::BufferData(
-            gl::ARRAY_BUFFER,                                                       // target
-            (vertices.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr, // size of data in bytes
-            vertices.as_ptr() as *const gl::types::GLvoid, // pointer to data
-            gl::STATIC_DRAW,                               // usage
-        );
-        gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-    }
+    let mut mesh = mesh::Mesh::new(vec![
+        mesh::Vertex::new(0, Vec3::new(0.5, -0.5, 0.0), [255, 0, 0, 255], Vec2::new(0.0, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(-0.5, -0.5, 0.0), [0, 255, 0, 255], Vec2::new(0.0, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(0.0, 0.5, 0.0), [0, 0, 255, 255], Vec2::new(0.0, 0.0)),
+    ]);
 
-    let mut vao: gl::types::GLuint = 0;
-    unsafe {
-        gl::GenVertexArrays(1, &mut vao);
-        gl::BindVertexArray(vao);
-        gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-
-        gl::EnableVertexAttribArray(0); // this is "layout (location = 0)" in vertex shader
-        gl::VertexAttribPointer(
-            0,         // index of the generic vertex attribute ("layout (location = 0)")
-            3,         // the number of components per generic vertex attribute
-            gl::FLOAT, // data type
-            gl::FALSE, // normalized (int-to-float conversion)
-            (6 * std::mem::size_of::<f32>()) as gl::types::GLint, // stride (byte offset between consecutive attributes)
-            std::ptr::null(),                                     // offset of the first component
-        );
-        gl::EnableVertexAttribArray(1); // this is "layout (location = 0)" in vertex shader
-        gl::VertexAttribPointer(
-            1,         // index of the generic vertex attribute ("layout (location = 0)")
-            3,         // the number of components per generic vertex attribute
-            gl::FLOAT, // data type
-            gl::FALSE, // normalized (int-to-float conversion)
-            (6 * std::mem::size_of::<f32>()) as gl::types::GLint, // stride (byte offset between consecutive attributes)
-            (3 * std::mem::size_of::<f32>()) as *const gl::types::GLvoid, // offset of the first component
-        );
-
-        gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-        gl::BindVertexArray(0);
-    }
+    mesh.load_without_ebo();
+    mesh.bind();
 
     'running: loop {
         unsafe {
@@ -95,13 +63,8 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
             shader_program.use_program();
-
-            gl::BindVertexArray(vao);
-            gl::DrawArrays(
-                gl::TRIANGLES, // mode
-                0,             // starting index in the enabled arrays
-                3,             // number of indices to be rendered
-            );
+            mesh.bind();
+            mesh.draw();
         }
 
         window.gl_swap_window();
@@ -115,4 +78,5 @@ fn main() {
         }
         ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
     }
+    log::info!("quit");
 }
