@@ -12,5 +12,5 @@ out VS_OUTPUT {
 void main()
 {
     gl_Position = vec4(position, 1.0);
-    OUT.Color = vec4(float(color[0]) / 255.0f, float(color[1]) / 255.0f, float(color[2]) / 255.0f, float(color[3]) / 255.0f);
+    OUT.Color = color / 255.0f;
 }
