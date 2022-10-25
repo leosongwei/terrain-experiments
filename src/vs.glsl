@@ -2,8 +2,9 @@
 
 layout (location = 0) in uint diffuse_index;
 layout (location = 1) in vec3 position;
-layout (location = 2) in vec4 color;
-layout (location = 3) in vec2 uv;
+layout (location = 2) in vec3 normal;
+layout (location = 3) in vec4 color;
+layout (location = 4) in vec2 uv;
 
 out VS_OUTPUT {
     vec4 Color;

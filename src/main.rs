@@ -39,17 +39,10 @@ fn main() {
     let fs = std::fs::read_to_string("src/fs.glsl").unwrap();
     let shader_program = ShaderProgram::from_shader_strings(&vs, &fs).unwrap();
 
-    let vertices: Vec<f32> = vec![
-        // positions      // colors
-        0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // bottom right
-        -0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // bottom left
-        0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // top
-    ];
-
     let mut mesh = mesh::Mesh::new(vec![
-        mesh::Vertex::new(0, Vec3::new(0.5, -0.5, 0.0), [255, 0, 0, 255], Vec2::new(0.3, 0.0)),
-        mesh::Vertex::new(0, Vec3::new(-0.5, -0.5, 0.0), [0, 255, 0, 255], Vec2::new(0.3, 0.0)),
-        mesh::Vertex::new(0, Vec3::new(0.0, 0.5, 0.0), [0, 0, 255, 255], Vec2::new(0.3, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(0.5, -0.5, 0.0), Vec3::new(0.0, 0.0, 1.0), [255, 0, 0, 255], Vec2::new(0.3, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(-0.5, -0.5, 0.0), Vec3::new(0.0, 0.0, 1.0), [0, 255, 0, 255], Vec2::new(0.3, 0.0)),
+        mesh::Vertex::new(0, Vec3::new(0.0, 0.5, 0.0), Vec3::new(0.0, 0.0, 1.0), [0, 0, 255, 255], Vec2::new(0.3, 0.0)),
     ]);
 
     mesh.load_without_ebo();

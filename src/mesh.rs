@@ -4,6 +4,7 @@ use glam::{Vec2, Vec3};
 pub struct Vertex {
     diffuse_index: u32,
     position: Vec3,
+    normal: Vec3,
     color: [u8; 4],
     uv: Vec2
 }
@@ -12,10 +13,11 @@ impl Vertex {
     pub fn new(
         diffuse_index: u32,
         position: Vec3,
+        normal: Vec3,
         color: [u8; 4],
         uv: Vec2
     ) -> Self {
-        Vertex { diffuse_index, position, color, uv }
+        Vertex { diffuse_index, position, normal, color, uv }
     }
 }
 
@@ -74,9 +76,27 @@ impl Mesh {
         self.vao = 0;
     }
 
+    #[allow(unused_assignments)]
     pub fn load_without_ebo(&mut self) {
         let mut vao: gl::types::GLuint = 0;
         let mut vbo: gl::types::GLuint = 0;
+
+        let mut current_layout_index = 0;
+        
+        macro_rules! set_vertex_attrib_pointer {
+            ($field: tt, $gl_type: expr, $count: expr) => {
+                gl::EnableVertexAttribArray(current_layout_index);
+                gl::VertexAttribPointer(
+                    current_layout_index,         // index of the generic vertex attribute ("layout (location = 0)")
+                    $count,         // the number of components per generic vertex attribute
+                    $gl_type, // data type
+                    gl::FALSE, // normalized (int-to-float conversion)
+                    std::mem::size_of::<Vertex>() as gl::types::GLint, // stride (byte offset between consecutive attributes)
+                    memoffset::offset_of!(Vertex, $field) as *const gl::types::GLvoid,  // offset of the first component
+                );
+                current_layout_index = current_layout_index + 1;
+            };
+        }
 
         unsafe {
             gl::GenBuffers(1, &mut vbo);
@@ -91,45 +111,11 @@ impl Mesh {
             gl::GenVertexArrays(1, &mut vao);
             gl::BindVertexArray(vao);
 
-            gl::EnableVertexAttribArray(0);
-            gl::VertexAttribPointer(
-                0,         // index of the generic vertex attribute ("layout (location = 0)")
-                1,         // the number of components per generic vertex attribute
-                gl::UNSIGNED_INT, // data type
-                gl::FALSE, // normalized (int-to-float conversion)
-                std::mem::size_of::<Vertex>() as gl::types::GLint, // stride (byte offset between consecutive attributes)
-                memoffset::offset_of!(Vertex, diffuse_index) as *const gl::types::GLvoid,  // offset of the first component
-            );
-
-            gl::EnableVertexAttribArray(1);
-            gl::VertexAttribPointer(
-                1,         // index 
-                3,         // count
-                gl::FLOAT, // data type
-                gl::FALSE, // normalized (int-to-float conversion)
-                std::mem::size_of::<Vertex>() as gl::types::GLint, // stride
-                memoffset::offset_of!(Vertex, position) as *const gl::types::GLvoid // offset
-            );
-
-            gl::EnableVertexAttribArray(2);
-            gl::VertexAttribPointer(
-                2,         // index 
-                4,         // count
-                gl::UNSIGNED_BYTE, // data type
-                gl::FALSE, // normalized (int-to-float conversion)
-                std::mem::size_of::<Vertex>() as gl::types::GLint, // stride
-                memoffset::offset_of!(Vertex, color) as *const gl::types::GLvoid // offset
-            );
-
-            gl::EnableVertexAttribArray(3);
-            gl::VertexAttribPointer(
-                3,         // index 
-                2,         // count
-                gl::FLOAT, // data type
-                gl::FALSE, // normalized (int-to-float conversion)
-                std::mem::size_of::<Vertex>() as gl::types::GLint, // stride
-                memoffset::offset_of!(Vertex, uv) as *const gl::types::GLvoid // offset
-            );
+            set_vertex_attrib_pointer!(diffuse_index, gl::UNSIGNED_INT, 1);
+            set_vertex_attrib_pointer!(position, gl::FLOAT, 3);
+            set_vertex_attrib_pointer!(normal, gl::FLOAT, 3);
+            set_vertex_attrib_pointer!(color, gl::UNSIGNED_BYTE, 4);
+            set_vertex_attrib_pointer!(uv, gl::FLOAT, 2);
         }
 
         self.unbind();
