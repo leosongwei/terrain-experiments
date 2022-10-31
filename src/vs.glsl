@@ -6,6 +6,9 @@ layout (location = 2) in vec3 normal;
 layout (location = 3) in vec4 color;
 layout (location = 4) in vec2 uv;
 
+uniform mat4 view_projection;
+uniform vec3 model;
+
 out VS_OUTPUT {
     vec4 Color;
 } OUT;

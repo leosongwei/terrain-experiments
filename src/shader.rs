@@ -1,5 +1,7 @@
 use gl;
+use glam::{Mat4, Vec2, Vec3};
 use std;
+use std::collections::HashMap;
 use std::ffi::{CStr, CString};
 
 pub struct ShaderProgram {
@@ -15,10 +17,36 @@ impl std::ops::Drop for ShaderProgram {
     }
 }
 
+pub enum ShaderParam {
+    Int(i32),
+    Float(f32),
+    Vec2(Vec2),
+    Vec3(Vec3),
+    Mat4(Mat4),
+}
+
 impl ShaderProgram {
     pub fn use_program(&self) {
         unsafe {
             gl::UseProgram(self.id);
+        }
+    }
+
+    pub fn set_uniforms(&self, params: HashMap<&str, ShaderParam>) {
+        let set_uniform = |name: &str, value: ShaderParam| unsafe {
+            let uniform_location = gl::GetUniformLocation(self.id, name.as_ptr() as *const i8);
+            match value {
+                ShaderParam::Int(v) => gl::Uniform1i(uniform_location, v),
+                ShaderParam::Float(v) => gl::Uniform1f(uniform_location, v),
+                ShaderParam::Vec2(v) => gl::Uniform2f(uniform_location, v.x, v.y),
+                ShaderParam::Vec3(v) => gl::Uniform3f(uniform_location, v.x, v.y, v.z),
+                ShaderParam::Mat4(v) => {
+                    gl::UniformMatrix4fv(uniform_location, 1, gl::FALSE, v.to_cols_array().as_ptr())
+                }
+            }
+        };
+        for (name, value) in params {
+            set_uniform(name, value);
         }
     }
 
@@ -27,11 +55,11 @@ impl ShaderProgram {
 
         let vs = match shader_from_source(vs, gl::VERTEX_SHADER) {
             Ok(id) => id,
-            Err(message) => return Err(message)
+            Err(message) => return Err(message),
         };
         let fs = match shader_from_source(fs, gl::FRAGMENT_SHADER) {
             Ok(id) => id,
-            Err(message) => return Err(message)
+            Err(message) => return Err(message),
         };
 
         log::debug!("link shaders");
@@ -64,7 +92,9 @@ impl ShaderProgram {
                 );
             }
 
-            unsafe { gl::DeleteProgram(program_id); }
+            unsafe {
+                gl::DeleteProgram(program_id);
+            }
 
             return Err(error.to_string_lossy().into_owned());
         }
@@ -85,17 +115,15 @@ pub struct Shader {
 impl std::ops::Drop for Shader {
     fn drop(&mut self) {
         log::debug!("droping shader");
-        unsafe {
-            gl::DeleteShader(self.id)
-        }
+        unsafe { gl::DeleteShader(self.id) }
     }
 }
 
 fn shader_from_source(source: &str, kind: gl::types::GLenum) -> Result<Shader, String> {
     log::debug!("Compile shader");
 
-    let c_source = unsafe { CStr::from_ptr(source.as_ptr() as *const i8)};
-    let id = unsafe {gl::CreateShader(kind)};
+    let c_source = unsafe { CStr::from_ptr(source.as_ptr() as *const i8) };
+    let id = unsafe { gl::CreateShader(kind) };
     unsafe {
         gl::ShaderSource(id, 1, &c_source.as_ptr(), std::ptr::null());
         gl::CompileShader(id);
