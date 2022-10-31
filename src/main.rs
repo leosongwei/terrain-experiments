@@ -1,5 +1,6 @@
 mod shader;
 mod mesh;
+mod camera;
 mod renderer;
 
 use glam::{Vec3, Vec2};
@@ -9,6 +10,7 @@ use sdl2::video::GLProfile;
 
 use simple_logger::SimpleLogger;
 
+use crate::camera::SimpleCamera;
 use crate::shader::ShaderProgram;
 
 fn main() {
@@ -49,19 +51,19 @@ fn main() {
     mesh.load_without_ebo();
     mesh.bind();
 
-    'running: loop {
-        unsafe {
-            let (window_width, window_height) = window.size();
-            gl::Viewport(0, 0, window_width as i32, window_height as i32);
-            gl::ClearColor(0.1, 0.1, 0.1, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
-
-            shader_program.use_program();
+    let render_function = || {
+        shader_program.use_program();
             mesh.bind();
             mesh.draw();
-        }
+        };
 
-        window.gl_swap_window();
+    let mut renderer = renderer::Renderer::new(window, SimpleCamera::new(Vec3::new(0f32, 0f32, 0f32), Vec3::new(0f32, 0f32, 0f32)));
+
+
+    'running: loop {
+
+        renderer.render(&render_function);
+        
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
