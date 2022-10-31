@@ -1,5 +1,6 @@
 mod shader;
 mod mesh;
+mod renderer;
 
 use glam::{Vec3, Vec2};
 use sdl2::event::Event;
