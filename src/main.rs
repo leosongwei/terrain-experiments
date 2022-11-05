@@ -43,7 +43,8 @@ fn main() {
 
     let vs = std::fs::read_to_string("src/vs.glsl").unwrap();
     let fs = std::fs::read_to_string("src/fs.glsl").unwrap();
-    let shader_program = ShaderProgram::from_shader_strings(&vs, &fs).unwrap();
+    let uniforms = vec!["view_projection", "model"];
+    let shader_program = ShaderProgram::from_shader_strings(&vs, &fs, uniforms).unwrap();
 
     let mut mesh = mesh::Mesh::new(vec![
         mesh::Vertex::new(

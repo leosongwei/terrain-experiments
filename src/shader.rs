@@ -3,9 +3,11 @@ use glam::{Mat4, Vec2, Vec3};
 use std;
 use std::collections::HashMap;
 use std::ffi::{CStr, CString};
+use std::str::FromStr;
 
 pub struct ShaderProgram {
     id: gl::types::GLuint,
+    uniform_locations: HashMap<String, i32>,
 }
 
 impl std::ops::Drop for ShaderProgram {
@@ -34,7 +36,11 @@ impl ShaderProgram {
 
     pub fn set_uniforms(&self, params: HashMap<&str, ShaderParam>) {
         let set_uniform = |name: &str, value: ShaderParam| unsafe {
-            let uniform_location = gl::GetUniformLocation(self.id, name.as_ptr() as *const i8);
+            let uniform_location = self
+                .uniform_locations
+                .get(name)
+                .expect("Shader uniform not found!")
+                .clone();
             match value {
                 ShaderParam::Int(v) => gl::Uniform1i(uniform_location, v),
                 ShaderParam::Float(v) => gl::Uniform1f(uniform_location, v),
@@ -50,7 +56,11 @@ impl ShaderProgram {
         }
     }
 
-    pub fn from_shader_strings(vs: &str, fs: &str) -> Result<ShaderProgram, String> {
+    pub fn from_shader_strings(
+        vs: &str,
+        fs: &str,
+        uniforms: Vec<&str>,
+    ) -> Result<ShaderProgram, String> {
         let program_id = unsafe { gl::CreateProgram() };
 
         let vs = match shader_from_source(vs, gl::VERTEX_SHADER) {
@@ -99,12 +109,26 @@ impl ShaderProgram {
             return Err(error.to_string_lossy().into_owned());
         }
 
+        let mut uniform_locations: HashMap<String, i32> = HashMap::new();
+
+        unsafe {
+            for uniform in uniforms {
+                uniform_locations.insert(
+                    String::from_str(uniform).unwrap(),
+                    gl::GetUniformLocation(program_id, uniform.as_ptr() as *const i8),
+                );
+            }
+        }
+
         unsafe {
             gl::DetachShader(program_id, vs.id);
             gl::DetachShader(program_id, fs.id);
         }
 
-        Ok(ShaderProgram { id: program_id })
+        Ok(ShaderProgram {
+            id: program_id,
+            uniform_locations,
+        })
     }
 }
 
