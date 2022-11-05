@@ -4,10 +4,12 @@ mod renderer;
 mod shader;
 
 use std::collections::HashMap;
+use std::ops::Add;
 
 use glam::{Vec2, Vec3};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::mouse::{MouseButton, MouseState, RelativeMouseState};
 use sdl2::video::GLProfile;
 
 use simple_logger::SimpleLogger;
@@ -81,16 +83,29 @@ fn main() {
 
     let mut renderer = renderer::Renderer::new(
         window,
-        SimpleCamera::new(Vec3::new(0f32, 0f32, 0f32), Vec3::new(0f32, 0f32, 0f32)),
+        SimpleCamera::new(
+            Vec3::new(0f32, 0f32, 2f32),
+            Vec3::new(0f32, 0f32, 0f32),
+            (70.0 / 360.0) * 2.0 * 3.14,
+            4.0 / 3.0,
+            0.01,
+        ),
     );
 
     'running: loop {
-        shader_program.set_uniforms(HashMap::from([(
-            "view_projection",
-            shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
-        )]));
-
-        renderer.render(&render_function);
+        if event_pump
+            .mouse_state()
+            .is_mouse_button_pressed(MouseButton::Left)
+        {
+            let relative: RelativeMouseState = event_pump.relative_mouse_state();
+            let (width, height) = renderer.window.drawable_size();
+            let rotation = Vec3::new(
+                relative.y() as f32 / height as f32,
+                relative.x() as f32 / width as f32,
+                0f32,
+            ) * 0.4;
+            renderer.main_camera.rotate_camera(rotation);
+        }
 
         for event in event_pump.poll_iter() {
             match event {
@@ -99,9 +114,53 @@ fn main() {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
+                Event::KeyDown {
+                    keycode: Some(Keycode::S),
+                    ..
+                } => {
+                    renderer
+                        .main_camera
+                        .move_camera(Vec3::new(0f32, 0f32, 0.05));
+                    log::debug!("{}", renderer.main_camera.position)
+                }
+                Event::KeyDown {
+                    keycode: Some(Keycode::W),
+                    ..
+                } => {
+                    renderer
+                        .main_camera
+                        .move_camera(Vec3::new(0f32, 0f32, -0.05));
+                    log::debug!("{}", renderer.main_camera.position)
+                }
+                Event::KeyDown {
+                    keycode: Some(Keycode::A),
+                    ..
+                } => {
+                    renderer
+                        .main_camera
+                        .move_camera(Vec3::new(-0.05, 0f32, 0f32));
+                    log::debug!("{}", renderer.main_camera.position)
+                }
+                Event::KeyDown {
+                    keycode: Some(Keycode::D),
+                    ..
+                } => {
+                    renderer
+                        .main_camera
+                        .move_camera(Vec3::new(0.05, 0f32, 0f32));
+                    log::debug!("{}", renderer.main_camera.position)
+                }
                 _ => {}
             }
         }
+
+        shader_program.set_uniforms(HashMap::from([(
+            "view_projection",
+            shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
+        )]));
+
+        renderer.render(&render_function);
+
         ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
     }
     mesh.unload();
