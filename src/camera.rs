@@ -52,8 +52,7 @@ impl SimpleCamera {
     }
 
     pub fn rotate_camera(&mut self, rotation: Vec3) {
-        self.angle_rad += rotation;
-        self.angle_rad.z = 0f32;
+        self.angle_rad += Vec3::new(-rotation.x, -rotation.y, 0f32);
         if self.angle_rad.x > 3.14 / 2.0 {
             self.angle_rad.x = 3.14 / 2.0
         }

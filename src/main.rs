@@ -10,6 +10,7 @@ use glam::{Vec2, Vec3};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::{MouseButton, MouseState, RelativeMouseState};
+use sdl2::sys::SDL_Scancode;
 use sdl2::video::GLProfile;
 
 use simple_logger::SimpleLogger;
@@ -86,17 +87,16 @@ fn main() {
         SimpleCamera::new(
             Vec3::new(0f32, 0f32, 2f32),
             Vec3::new(0f32, 0f32, 0f32),
-            (70.0 / 360.0) * 2.0 * 3.14,
+            (50.0 / 360.0) * 2.0 * 3.14,
             4.0 / 3.0,
             0.01,
         ),
     );
 
+    let mut mouse_captured = false;
+
     'running: loop {
-        if event_pump
-            .mouse_state()
-            .is_mouse_button_pressed(MouseButton::Left)
-        {
+        if mouse_captured {
             let relative: RelativeMouseState = event_pump.relative_mouse_state();
             let (width, height) = renderer.window.drawable_size();
             let rotation = Vec3::new(
@@ -107,48 +107,75 @@ fn main() {
             renderer.main_camera.rotate_camera(rotation);
         }
 
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::W)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(0f32, 0f32, -0.05));
+        }
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::S)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(0f32, 0f32, 0.05));
+        }
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::A)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(-0.05, 0f32, 0f32));
+        }
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::D)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(0.05, 0f32, 0f32));
+        }
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::LShift)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(0f32, 0.05, 0f32));
+        }
+        if event_pump
+            .keyboard_state()
+            .is_scancode_pressed(sdl2::keyboard::Scancode::LCtrl)
+        {
+            renderer
+                .main_camera
+                .move_camera(Vec3::new(0f32, -0.05, 0f32));
+        }
+
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit { .. }
-                | Event::KeyDown {
+                Event::Quit { .. } => break 'running,
+                Event::KeyDown {
                     keycode: Some(Keycode::Escape),
                     ..
-                } => break 'running,
-                Event::KeyDown {
-                    keycode: Some(Keycode::S),
-                    ..
                 } => {
-                    renderer
-                        .main_camera
-                        .move_camera(Vec3::new(0f32, 0f32, 0.05));
-                    log::debug!("{}", renderer.main_camera.position)
+                    if !mouse_captured {
+                        break 'running;
+                    } else {
+                        mouse_captured = false;
+                        sdl_context.mouse().set_relative_mouse_mode(false);
+                    }
                 }
-                Event::KeyDown {
-                    keycode: Some(Keycode::W),
+                Event::MouseButtonDown {
+                    mouse_btn: MouseButton::Left,
                     ..
                 } => {
-                    renderer
-                        .main_camera
-                        .move_camera(Vec3::new(0f32, 0f32, -0.05));
-                    log::debug!("{}", renderer.main_camera.position)
-                }
-                Event::KeyDown {
-                    keycode: Some(Keycode::A),
-                    ..
-                } => {
-                    renderer
-                        .main_camera
-                        .move_camera(Vec3::new(-0.05, 0f32, 0f32));
-                    log::debug!("{}", renderer.main_camera.position)
-                }
-                Event::KeyDown {
-                    keycode: Some(Keycode::D),
-                    ..
-                } => {
-                    renderer
-                        .main_camera
-                        .move_camera(Vec3::new(0.05, 0f32, 0f32));
-                    log::debug!("{}", renderer.main_camera.position)
+                    mouse_captured = true;
+                    sdl_context.mouse().set_relative_mouse_mode(true);
                 }
                 _ => {}
             }
