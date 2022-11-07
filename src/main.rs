@@ -5,13 +5,11 @@ mod renderer;
 mod shader;
 
 use std::collections::HashMap;
-use std::ops::Add;
 
 use glam::{Vec2, Vec3};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::mouse::{MouseButton, MouseState, RelativeMouseState};
-use sdl2::sys::SDL_Scancode;
+use sdl2::mouse::{MouseButton, RelativeMouseState};
 use sdl2::video::GLProfile;
 
 use simple_logger::SimpleLogger;
