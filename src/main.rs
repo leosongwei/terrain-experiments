@@ -1,4 +1,5 @@
 mod camera;
+mod map;
 mod mesh;
 mod renderer;
 mod shader;
