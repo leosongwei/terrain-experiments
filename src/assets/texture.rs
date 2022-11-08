@@ -1,3 +1,4 @@
+use gl;
 use std::collections::HashMap;
 
 pub struct Texture {
@@ -8,4 +9,5 @@ pub struct Texture {
 
 pub struct TextureArray {
     name_to_id: HashMap<String, u16>,
+    gl_id: gl::types::GLuint,
 }
