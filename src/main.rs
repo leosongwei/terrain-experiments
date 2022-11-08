@@ -1,8 +1,9 @@
+mod assets;
 mod camera;
-mod map;
 mod mesh;
 mod renderer;
 mod shader;
+mod terrain;
 
 use std::collections::HashMap;
 

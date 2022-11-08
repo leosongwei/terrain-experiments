@@ -1,6 +1,6 @@
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Block {
-    id: u16,
+    type_id: u16,
 }
 
 const DICE_SIZE: usize = 16;
@@ -12,7 +12,7 @@ pub struct Dice {
 impl Dice {
     pub fn new() -> Self {
         Dice {
-            array: [[[Block { id: 0 }; DICE_SIZE]; DICE_SIZE]; DICE_SIZE],
+            array: [[[Block { type_id: 0 }; DICE_SIZE]; DICE_SIZE]; DICE_SIZE],
         }
     }
 }
