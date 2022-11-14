@@ -43,7 +43,10 @@ TextureRegistry (texture_definition):
 
 TextureDefinition
 * name
-* path
+* path_diffuse
+* path_specular
+* path_glossiness
+* path_normal
 
 Texture:
 * name

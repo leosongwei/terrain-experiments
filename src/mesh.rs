@@ -2,22 +2,34 @@ use glam::{Vec2, Vec3};
 
 #[repr(C, packed)]
 pub struct Vertex {
-    diffuse_index: u32,
+    texture_diffuse: u32,
+    texture_specular: u32,
+    texture_glossiness: u32,
     position: Vec3,
     normal: Vec3,
     color: [u8; 4],
-    uv: Vec2
+    uv: Vec2,
 }
 
 impl Vertex {
     pub fn new(
-        diffuse_index: u32,
+        texture_diffuse: u32,
+        texture_specular: u32,
+        texture_glossiness: u32,
         position: Vec3,
         normal: Vec3,
         color: [u8; 4],
-        uv: Vec2
+        uv: Vec2,
     ) -> Self {
-        Vertex { diffuse_index, position, normal, color, uv }
+        Vertex {
+            texture_diffuse,
+            texture_specular,
+            texture_glossiness,
+            position,
+            normal,
+            color,
+            uv,
+        }
     }
 }
 
@@ -38,18 +50,12 @@ impl Mesh {
             indexed: false,
             vao: 0,
             vbo: 0,
-            ebo: 0
+            ebo: 0,
         }
     }
 
     pub fn draw(&self) {
-        unsafe {
-            gl::DrawArrays(
-                gl::TRIANGLES,
-                0,
-                self.vertices.len() as i32
-            )
-        }
+        unsafe { gl::DrawArrays(gl::TRIANGLES, 0, self.vertices.len() as i32) }
     }
 
     pub fn bind(&self) {
@@ -82,7 +88,7 @@ impl Mesh {
         let mut vbo: gl::types::GLuint = 0;
 
         let mut current_layout_index = 0;
-        
+
         macro_rules! set_vertex_attrib_pointer {
             ($field: tt, $gl_type: expr, $count: expr) => {
                 gl::EnableVertexAttribArray(current_layout_index);
@@ -105,13 +111,15 @@ impl Mesh {
                 gl::ARRAY_BUFFER,
                 (self.vertices.len() * std::mem::size_of::<Vertex>()) as gl::types::GLsizeiptr,
                 self.vertices.as_ptr() as *const gl::types::GLvoid,
-                gl::STATIC_DRAW
+                gl::STATIC_DRAW,
             );
 
             gl::GenVertexArrays(1, &mut vao);
             gl::BindVertexArray(vao);
 
-            set_vertex_attrib_pointer!(diffuse_index, gl::UNSIGNED_INT, 1);
+            set_vertex_attrib_pointer!(texture_diffuse, gl::UNSIGNED_INT, 1);
+            set_vertex_attrib_pointer!(texture_specular, gl::UNSIGNED_INT, 1);
+            set_vertex_attrib_pointer!(texture_glossiness, gl::UNSIGNED_INT, 1);
             set_vertex_attrib_pointer!(position, gl::FLOAT, 3);
             set_vertex_attrib_pointer!(normal, gl::FLOAT, 3);
             set_vertex_attrib_pointer!(color, gl::UNSIGNED_BYTE, 4);
