@@ -29,5 +29,3 @@ impl Dice for SolidDice {
         todo!()
     }
 }
-
-pub struct Chunk {}
