@@ -1,4 +1,5 @@
 use crate::mesh::Vertex;
+use crate::terrain::coords;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Block {

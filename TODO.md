@@ -1,26 +1,43 @@
 Chunk -> Dice -> Block -> type_id
 
-BlockType:
-  * id
-  * name
-  * texture_ids
-
 gl_traits: https://doc.rust-lang.org/book/ch10-02-traits.html#traits-defining-shared-behavior
 
-BlockTypeRegistry(block_type_definitions, texture_registry)
-* `get_by_id(id) -> BlockType`
+------------------------------------
 
-BlockTypeDefinitions
-* id, Name, other properties
-* texture name of all sides
+# Coordinates
+
+WorldCoord (xyz, for block)
+
+BlockCoord (xyz, county by block, find block in dice)
+* baseWorldCoord(DiceCoord, ChunkCoord)
+
+DiceCoord (xyz, count by dice, find dice in chunk)
+* baseWorldCoord(ChunkCoord)
+
+ChunkCoord (xyz, world coord count by Chunk)
+* baseWorldCoord()
+
+------------------------------------
 
 BlockType
 * id, name, other properties
 * index in texture array of all sides
   * getters for index for diffuse, 
 
+BlockTypeDefinitions
+* id, Name, other properties
+* texture name of all sides
+
+BlockTypeRegistry(block_type_definitions, texture_registry)
+* `get_by_id(id) -> BlockType`
+
+--------------------------------------
+
+
+
 LoadedArea:
- * Array of Chunks
+ * Array of Chunks, indexed by ChunkCoord
+ * prune_and_load()
 
 Chunks
    * Array of Dices
@@ -38,7 +55,7 @@ Renderer
 * TextureRegistry
 
 TextureRegistry (texture_definition):
-* texture_name -> texture_id
+* (texture_name, texture_type) -> texture_id
 * texture array gl_id;
 
 TextureDefinition
@@ -50,5 +67,11 @@ TextureDefinition
 
 Texture:
 * name
-* id
-* path
+* path_diffuse
+* id_diffuse
+* path_specular
+* id_specular
+* path_glossiness
+* id_glossiness
+* path_normal
+* id_normal
