@@ -1,5 +1,9 @@
+use std::collections::HashMap;
+
+type BlockTypeID = u16;
+
 pub struct BlockType {
-    id: u16,
+    id: BlockTypeID,
     name: String,
     texture_id_top: u16,
     texture_id_bottom: u16,
@@ -10,7 +14,7 @@ pub struct BlockType {
 }
 
 impl BlockType {
-    pub fn id(&self) -> u16 {
+    pub fn id(&self) -> BlockTypeID {
         return self.id;
     }
     pub fn texture_id_top(&self) -> u16 {
@@ -33,42 +37,27 @@ impl BlockType {
     }
 }
 
-struct SimpleBlockTypeNotation {
-    id: u16,
+struct BlockTypeDefinition {
+    id: BlockTypeID,
     name: String,
-    texture_id_top: u16,
-    texture_id_bottom: u16,
-    texture_id_north: u16,
-    texture_id_south: u16,
-    texture_id_west: u16,
-    texture_id_east: u16,
+    texture_top: String,
+    texture_bottom: String,
+    texture_north: String,
+    texture_south: String,
+    texture_west: String,
+    texture_east: String,
 }
 
-pub struct SimpleBlockTypeRegistry {}
+pub struct BlockTypeRegistry {
+    types: HashMap<BlockTypeID, BlockType>,
+}
 
-impl SimpleBlockTypeRegistry {
-    pub fn get_block_types() {
-        let types = vec![
-            BlockType {
-                id: 0,
-                name: "void".to_string(),
-                texture_id_top: 0u16,
-                texture_id_bottom: 0u16,
-                texture_id_north: 0u16,
-                texture_id_south: 0u16,
-                texture_id_west: 0u16,
-                texture_id_east: 0u16,
-            },
-            BlockType {
-                id: 1,
-                name: "air".to_string(),
-                texture_id_top: 0u16,
-                texture_id_bottom: 0u16,
-                texture_id_north: 0u16,
-                texture_id_south: 0u16,
-                texture_id_west: 0u16,
-                texture_id_east: 0u16,
-            },
-        ];
+impl BlockTypeRegistry {
+    pub fn new() -> Self {
+        const _types: Vec<BlockTypeDefinition> = vec![];
+
+        Self {
+            types: HashMap::new(),
+        }
     }
 }
