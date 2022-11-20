@@ -14,4 +14,26 @@ struct ChunkCoord {
     xyz: IVec3,
 }
 
-impl BlockCoord {}
+impl WorldCoord {
+    pub fn new(xyz: IVec3) -> Self {
+        Self { xyz }
+    }
+}
+
+impl BlockCoord {
+    pub fn new(xyz: IVec3) -> Self {
+        Self { xyz }
+    }
+}
+
+impl DiceCoord {
+    pub fn new(xyz: IVec3) -> Self {
+        Self { xyz }
+    }
+}
+
+impl ChunkCoord {
+    pub fn new(xyz: IVec3) -> Self {
+        Self { xyz }
+    }
+}
