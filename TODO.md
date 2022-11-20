@@ -9,7 +9,7 @@ gl_traits: https://doc.rust-lang.org/book/ch10-02-traits.html#traits-defining-sh
 WorldCoord (xyz, for block)
 
 BlockCoord (xyz, county by block, find block in dice)
-* baseWorldCoord(DiceCoord, ChunkCoord)
+* toWorldCoord(DiceCoord, ChunkCoord)
 
 DiceCoord (xyz, count by dice, find dice in chunk)
 * baseWorldCoord(ChunkCoord)
