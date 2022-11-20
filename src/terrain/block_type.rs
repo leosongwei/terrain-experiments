@@ -1,3 +1,4 @@
+use crate::terrain::static_block_type_definitions;
 use std::collections::HashMap;
 
 type BlockTypeID = u16;
@@ -37,15 +38,14 @@ impl BlockType {
     }
 }
 
-struct BlockTypeDefinition {
-    id: BlockTypeID,
-    name: String,
-    texture_top: String,
-    texture_bottom: String,
-    texture_north: String,
-    texture_south: String,
-    texture_west: String,
-    texture_east: String,
+pub struct StaticBlockTypeDefinition {
+    pub name: &'static str,
+    pub texture_top: &'static str,
+    pub texture_bottom: &'static str,
+    pub texture_north: &'static str,
+    pub texture_south: &'static str,
+    pub texture_west: &'static str,
+    pub texture_east: &'static str,
 }
 
 pub struct BlockTypeRegistry {
@@ -54,7 +54,8 @@ pub struct BlockTypeRegistry {
 
 impl BlockTypeRegistry {
     pub fn new() -> Self {
-        const _types: Vec<BlockTypeDefinition> = vec![];
+        let _types: Vec<StaticBlockTypeDefinition> =
+            static_block_type_definitions::block_type_definitions();
 
         Self {
             types: HashMap::new(),
