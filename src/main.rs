@@ -45,8 +45,8 @@ fn main() {
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    let vs = std::fs::read_to_string("src/vs.glsl").unwrap();
-    let fs = std::fs::read_to_string("src/fs.glsl").unwrap();
+    let vs = std::fs::read_to_string("src/shaders/vs.glsl").unwrap();
+    let fs = std::fs::read_to_string("src/shaders/fs.glsl").unwrap();
     let uniforms = vec!["view_projection", "model"];
     let shader_program = ShaderProgram::from_shader_strings(&vs, &fs, uniforms).unwrap();
 

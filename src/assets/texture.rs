@@ -2,7 +2,6 @@ use gl;
 use std::collections::HashMap;
 
 pub type TextureID = u16;
-pub const TEXTURE_NOT_FOUND_ID: TextureID = 0;
 
 pub struct Texture {
     id: TextureID,
@@ -11,6 +10,7 @@ pub struct Texture {
 }
 
 pub struct TextureArray {
+    invalid_id: TextureID,
     name_to_id: HashMap<String, TextureID>,
     gl_id: gl::types::GLuint,
 }
@@ -20,7 +20,7 @@ impl TextureArray {
         if let Some(id) = self.name_to_id.get(name) {
             return id.clone();
         } else {
-            return TEXTURE_NOT_FOUND_ID;
+            return self.invalid_id.clone();
         }
     }
 }
