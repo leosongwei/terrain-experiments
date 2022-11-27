@@ -1,1 +1,1 @@
-mod texture;
+pub mod texture;
