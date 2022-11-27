@@ -48,8 +48,7 @@ impl ShaderProgram {
                     ShaderParam::Vec2(v) => gl::Uniform2f(uniform_location, v.x, v.y),
                     ShaderParam::Vec3(v) => gl::Uniform3f(uniform_location, v.x, v.y, v.z),
                     ShaderParam::Mat4(v) => {
-                        let array = v.to_cols_array();
-                        let ptr = array.as_ptr();
+                        let ptr = v.to_cols_array().as_ptr();
                         gl::UniformMatrix4fv(uniform_location, 1, gl::FALSE, ptr);
                     }
                 }
