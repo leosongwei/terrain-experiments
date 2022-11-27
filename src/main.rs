@@ -188,13 +188,13 @@ fn main() {
             }
         }
 
-        let view_mat = Mat4::IDENTITY;
+        //let view_mat = Mat4::IDENTITY;
 
         shader_program.set_uniforms(HashMap::from([(
             "view_projection",
             shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
         )]));
-        println!("view: {}", view_mat);
+        //println!("view: {}", view_mat);
 
         renderer.render(&render_function);
 
