@@ -26,7 +26,6 @@ impl SimpleCamera {
     }
 
     pub fn get_view_mat(&self) -> Mat4 {
-        println!("camear: pos {}, angle: {}", self.position, self.angle_rad);
         return Mat4::perspective_infinite_lh(
             self.fov_y_rad,
             self.aspect_ratio_w_over_h,

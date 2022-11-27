@@ -8,7 +8,7 @@ mod terrain;
 
 use std::collections::HashMap;
 
-use glam::{Vec2, Vec3};
+use glam::{Mat4, Vec2, Vec3};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::{MouseButton, RelativeMouseState};
@@ -188,11 +188,12 @@ fn main() {
             }
         }
 
+        let _identity = Mat4::IDENTITY; // why removing this will cause UniformMatrix4fv not functional???
+
         shader_program.set_uniforms(HashMap::from([(
             "view_projection",
             shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
         )]));
-
         renderer.render(&render_function);
 
         ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
