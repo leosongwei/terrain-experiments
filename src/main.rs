@@ -8,7 +8,7 @@ mod terrain;
 
 use std::collections::HashMap;
 
-use glam::{Vec2, Vec3};
+use glam::{Mat4, Vec2, Vec3};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::{MouseButton, RelativeMouseState};
@@ -188,9 +188,13 @@ fn main() {
             }
         }
 
+        let view_mat = renderer.main_camera.get_view_mat();
+        println!("view: {}", view_mat);
+
         shader_program.set_uniforms(HashMap::from([(
             "view_projection",
             shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
+            //shader::ShaderParam::Mat4(Mat4::IDENTITY),
         )]));
 
         renderer.render(&render_function);

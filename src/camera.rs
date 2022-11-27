@@ -26,8 +26,9 @@ impl SimpleCamera {
     }
 
     pub fn get_view_mat(&self) -> Mat4 {
-        println!("camear: pos {}, angle: {}", self.position, self.angle_rad);
-        return Mat4::perspective_infinite_lh(
+        //println!("camear: pos {}, angle: {}", self.position, self.angle_rad);
+        return Mat4::IDENTITY.clone();
+        /* Mat4::perspective_infinite_lh(
             self.fov_y_rad,
             self.aspect_ratio_w_over_h,
             self.z_near,
@@ -43,7 +44,7 @@ impl SimpleCamera {
             -self.position.x,
             -self.position.y,
             self.position.z,
-        ));
+        )); */
     }
 
     pub fn move_camera(&mut self, movement: Vec3) {
