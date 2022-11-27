@@ -188,7 +188,8 @@ fn main() {
             }
         }
 
-        let view_mat = renderer.main_camera.get_view_mat();
+        //let view_mat = renderer.main_camera.get_view_mat();
+        let view_mat = Mat4::IDENTITY;
         println!("view: {}", view_mat);
 
         shader_program.set_uniforms(HashMap::from([(
