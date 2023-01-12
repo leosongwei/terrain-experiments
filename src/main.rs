@@ -21,7 +21,6 @@ use crate::shader::ShaderProgram;
 
 fn main() {
     SimpleLogger::new().with_colors(true).init().unwrap();
-    log::info!("start.");
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -45,8 +44,8 @@ fn main() {
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    let vs = std::fs::read_to_string("shaders/vs.glsl").unwrap();
-    let fs = std::fs::read_to_string("shaders/fs.glsl").unwrap();
+    let vs = std::fs::read_to_string("shaders/vs.vert").unwrap();
+    let fs = std::fs::read_to_string("shaders/fs.frag").unwrap();
     let uniforms = vec!["view_projection", "model"];
     let shader_program = ShaderProgram::from_shader_strings(&vs, &fs, uniforms).unwrap();
 
@@ -83,22 +82,21 @@ fn main() {
     mesh.load_without_ebo();
     mesh.bind();
 
-    let render_function = || {
-        shader_program.use_program();
-        mesh.bind();
-        mesh.draw();
-    };
-
     let mut renderer = renderer::Renderer::new(
         window,
         SimpleCamera::new(
-            Vec3::new(0f32, 0f32, 2f32),
+            Vec3::new(0f32, 20f32, 2f32),
             Vec3::new(0f32, 0f32, 0f32),
             (50.0 / 360.0) * 2.0 * 3.14,
             4.0 / 3.0,
             0.01,
         ),
     );
+
+    let render_function = || {
+        //mesh.bind();
+        mesh.draw();
+    };
 
     let mut mouse_captured = false;
 
@@ -189,15 +187,12 @@ fn main() {
         }
 
         let _identity = Mat4::IDENTITY; // why removing this will cause UniformMatrix4fv not functional???
-
+        shader_program.use_program();
         shader_program.set_uniforms(HashMap::from([(
             "view_projection",
             shader::ShaderParam::Mat4(renderer.main_camera.get_view_mat()),
         )]));
         renderer.render(&render_function);
-
-        ::std::thread::sleep(::std::time::Duration::new(0, 1_000_000_000u32 / 60));
     }
     mesh.unload();
-    log::info!("quit");
 }

@@ -73,7 +73,6 @@ impl Mesh {
     }
 
     pub fn unload(&mut self) {
-        log::debug!("unload mesh");
         unsafe {
             gl::DeleteBuffers(1, &mut self.vbo);
             gl::DeleteVertexArrays(1, &mut self.vao);
@@ -131,6 +130,5 @@ impl Mesh {
         self.vao = vao;
         self.vbo = vbo;
         self.loaded = true;
-        log::debug!("vao: {vao}, vbo: {vbo}");
     }
 }

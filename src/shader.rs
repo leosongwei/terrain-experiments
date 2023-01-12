@@ -12,7 +12,6 @@ pub struct ShaderProgram {
 
 impl std::ops::Drop for ShaderProgram {
     fn drop(&mut self) {
-        log::debug!("droping program");
         unsafe {
             gl::DeleteProgram(self.id);
         }
@@ -68,14 +67,12 @@ impl ShaderProgram {
 
         let vs = match shader_from_source(vs, gl::VERTEX_SHADER) {
             Ok(id) => id,
-            Err(message) => return Err(message),
+            Err(message) => return Err(String::from("VERTEX_SHADER:") + &message),
         };
         let fs = match shader_from_source(fs, gl::FRAGMENT_SHADER) {
             Ok(id) => id,
-            Err(message) => return Err(message),
+            Err(message) => return Err(String::from("FRAGMENT_SHADER:") + &message),
         };
-
-        log::debug!("link shaders");
 
         unsafe {
             gl::AttachShader(program_id, vs.id);
@@ -141,15 +138,12 @@ pub struct Shader {
 
 impl std::ops::Drop for Shader {
     fn drop(&mut self) {
-        log::debug!("droping shader");
         unsafe { gl::DeleteShader(self.id) }
     }
 }
 
 fn shader_from_source(source: &str, kind: gl::types::GLenum) -> Result<Shader, String> {
-    log::debug!("Compile shader");
-
-    let c_source = unsafe { CStr::from_ptr(source.as_ptr() as *const i8) };
+    let c_source = CString::new(source).unwrap();
     let id = unsafe { gl::CreateShader(kind) };
     unsafe {
         gl::ShaderSource(id, 1, &c_source.as_ptr(), std::ptr::null());
