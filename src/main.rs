@@ -85,7 +85,7 @@ fn main() {
     let mut renderer = renderer::Renderer::new(
         window,
         SimpleCamera::new(
-            Vec3::new(0f32, 20f32, 2f32),
+            Vec3::new(0f32, 0f32, 2f32),
             Vec3::new(0f32, 0f32, 0f32),
             (50.0 / 360.0) * 2.0 * 3.14,
             4.0 / 3.0,
